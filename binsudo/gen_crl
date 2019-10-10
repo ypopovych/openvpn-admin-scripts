@@ -1,0 +1,10 @@
+#!/bin/bash
+set -e
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+source "$DIR/../utils/easyrsa.sh"
+
+easyrsa_call --batch gen-crl
+
+exit 0

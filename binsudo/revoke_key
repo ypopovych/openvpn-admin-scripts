@@ -3,28 +3,22 @@ set -e
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-source "$DIR/../config.sh"
 source "$DIR/../utils/user.sh"
-source "$OPENVPN_VARS"
+source "$DIR/../utils/easyrsa.sh"
 
 name=$(cleanup_username "$1")
 
-export EASY_RSA="${EASY_RSA:-.}"
-
-result=$("$EASY_RSA/revoke-full" "$name" 2>&1; exit 0)
+result="$(easyrsa_call --batch revoke "$name" 2>&1; exit 0)"
 echo "$result"
-revoked=$(echo "$result" | grep "certificate revoked" > /dev/null; echo "$?")
+echo ""
+revoked=$(echo "$result" | grep "Data Base Updated" > /dev/null; echo "$?")
 echo "Revoked: $revoked"
 
 if [ "$revoked" != "0" ] ; then
-	echo "Error: Can't revoke. Check openssl output"
+	echo "Error: Can't revoke. Check easy-rsa output"
 	exit 1
 fi
 
-if [ -f "$KEY_DIR/$name.key" ] ; then
-	rm "$KEY_DIR/$name".*
-fi
+easyrsa_call gen-crl
 
-if [ -f "$OPENVPN_KEY_BACKUP_DIR/$name.key" ] ; then
-	rm "$OPENVPN_KEY_BACKUP_DIR/$name".*
-fi
+exit 0

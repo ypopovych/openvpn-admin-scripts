@@ -8,14 +8,16 @@ NEW_KEY_MAIL_THEME="VPN Access Granted" # Theme of new key notification email
 
 REVOKE_KEY_MAIL_THEME="VPN Access Revoked" # Theme of revoke notification email
 
+RENEW_KEY_MAIL_THEME="VPN Access Renewed" # Theme of renew notification email
+
 NEW_KEY_MAIL_TEMPLATE="new_key.tsh" # Template for body of new key email (bash script with echo)
 
 REVOKE_KEY_MAIL_TEMPLATE="revoke_key.tsh" # Template for body of revoke email (bash script with echo)
 
-OPENVPN_VARS="/etc/openvpn/vars" # Path to edited easy-rsa vars
+RENEW_KEY_MAIL_TEMPLATE="renew_key.tsh" # Template for body of renew email (bash script with echo)
+
+OPENVPN_CA_DIR="/etc/openvpn/ca" # Path to easy-rsa ca directory
 
 OPENVPN_CONF_TEMPLATE="Template.ovpn" # Path to preconfigured .ovpn (without keys)
 
 OPENVPN_USER="openvpn" # OpenVPN server user. Can be root or nobody or custom user
-
-OPENVPN_KEY_BACKUP_DIR="/etc/openvpn/key_backup" # Directory with less rights for key backup (accessible only with notify then).

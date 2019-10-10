@@ -1,7 +1,7 @@
 function generate_user_conf {
 	DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 	source "$DIR/../config.sh"
-	source "$OPENVPN_VARS"
+	source "$DIR/bin.sh"
 
 	if [ -z "$TMP" ]; then
 		TMP="/tmp"
@@ -9,17 +9,14 @@ function generate_user_conf {
 
 	tmp=$(mktemp -d)
 
-	if [ -f "$KEY_DIR/$1.crt" ] ; then
-		sudo -u $OPENVPN_USER "$DIR/../binsudo/cat_key" "$1.key" > "$tmp/$1.key"
-		sudo -u $OPENVPN_USER "$DIR/../binsudo/cat_key" "$1.crt" > "$tmp/$1.crt"
-	elif [ "$2" == "yes" ] ; then
-		sudo -u $OPENVPN_USER "$DIR/../binsudo/cat_backup_key" "$1.crt" > "$tmp/$1.crt"
-		sudo -u $OPENVPN_USER "$DIR/../binsudo/cat_backup_key" "$1.key" > "$tmp/$1.key"
-	else
-		print_error "Key not found. Maybe it is backuped? Use notify then."
-	fi
-
-	sudo -u $OPENVPN_USER "$DIR/../binsudo/cat_key" "ca.crt" > "$tmp/ca.crt"
+	if [ "$(user_exists $name)" == "0" ] ; then
+    print_error "User does not exist: $1"
+    exit 1
+  fi
+	
+  run_bin_command "cat_pki" "private/$1.key" > "$tmp/$1.key"
+  run_bin_command "cat_pki" "issued/$1.crt" > "$tmp/$1.crt"
+  run_bin_command "cat_pki" "ca.crt" > "$tmp/ca.crt"
 
 	otmp=$(mktemp -d)
 	cp "$DIR/../$OPENVPN_CONF_TEMPLATE" "$otmp/"

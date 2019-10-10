@@ -3,13 +3,11 @@ set -e
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-source "$DIR/../config.sh"
 source "$DIR/../utils/user.sh"
-source "$OPENVPN_VARS"
+source "$DIR/../utils/easyrsa.sh"
 
-export KEY_NAME=$(cleanup_username "$1")
-export KEY_EMAIL="$2"
+export EASYRSA_REQ_NAME=$(cleanup_username "$1")
+export EASYRSA_REQ_EMAIL="$2"
 
-export EASY_RSA="${EASY_RSA:-.}"
-
-"$EASY_RSA/pkitool" $KEY_NAME
+easyrsa_call --batch --dn-mode=org --req-cn="$EASYRSA_REQ_NAME" --req-email="$EASYRSA_REQ_EMAIL" gen-req "$EASYRSA_REQ_NAME" nopass
+easyrsa_call --batch sign-req client "$EASYRSA_REQ_NAME"
